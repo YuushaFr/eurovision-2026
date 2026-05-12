@@ -15,81 +15,78 @@
             flex-direction: row-reverse; 
             justify-content: space-between;
             width: 100%;
-            gap: 2px;
         }
 
-        /* Hide the actual radio circles */
         .rating-group input { display: none; }
 
-        /* Style the star + number pair */
         .star-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             flex: 1;
             cursor: pointer;
-            transition: transform 0.1s;
         }
 
-        .star-item:active { transform: scale(1.2); }
-
-        /* The Star */
-        .star-item .star { font-size: 1.1rem; color: #334155; line-height: 1; }
+        /* BIGGER STARS */
+        .star-item .star { 
+            font-size: 1.6rem; 
+            color: #334155; 
+            line-height: 1; 
+            transition: transform 0.1s;
+        }
         
-        /* The Number */
-        .star-item .num { font-size: 0.65rem; font-weight: 800; color: #475569; margin-top: 4px; }
+        .star-item:active .star { transform: scale(1.4); }
 
-        /* Hover & Checked Logic (Standard RTL Star Hack) */
+        .star-item .num { 
+            font-size: 0.6rem; 
+            font-weight: 900; 
+            color: #475569; 
+            margin-top: 2px;
+        }
+
+        /* Hover & Checked Logic */
         .rating-group input:checked ~ .star-item .star,
         .rating-group .star-item:hover .star,
         .rating-group .star-item:hover ~ .star-item .star { 
             color: #facc15; 
         }
 
-        /* Highlighting the selected number too */
         .rating-group input:checked ~ .star-item .num { color: #facc15; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-2 pb-24 font-sans">
+<body class="bg-black text-slate-100 min-h-screen p-3 pb-24 font-sans">
 
     <header class="text-center py-6">
-        <h1 class="text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-500 to-orange-400 uppercase">
+        <h1 class="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-500 to-orange-400 uppercase">
             Vienna 2026
         </h1>
-        <div class="flex items-center justify-center gap-2 mt-1">
-            <span class="h-px w-8 bg-slate-800"></span>
-            <p class="text-slate-500 text-[10px] tracking-[0.3em] font-bold uppercase">Live Jury</p>
-            <span class="h-px w-8 bg-slate-800"></span>
-        </div>
+        <p class="text-slate-500 text-[10px] tracking-[0.4em] font-bold uppercase mt-1">Live Scorecard</p>
     </header>
 
-    <main x-data="votingApp()" x-init="init()" x-cloak class="max-w-xl mx-auto space-y-4">
+    <main x-data="votingApp()" x-init="init()" x-cloak class="max-w-xl mx-auto space-y-5">
         <template x-for="(country, idx) in countries" :key="idx">
-            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-xl">
+            <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-5 shadow-2xl backdrop-blur-sm">
                 
-                <!-- Country Header -->
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center gap-3">
-                        <div class="text-2xl" x-text="country.flag"></div>
+                        <div class="text-3xl" x-text="country.flag"></div>
                         <div>
-                            <span class="text-[9px] font-bold text-fuchsia-500 tracking-widest block -mb-1" x-text="'# ' + (idx + 1)"></span>
-                            <h2 class="text-lg font-black uppercase tracking-tight" x-text="country.name"></h2>
+                            <span class="text-[9px] font-bold text-fuchsia-500 tracking-widest block uppercase" x-text="'Position ' + (idx + 1)"></span>
+                            <h2 class="text-xl font-black tracking-tight" x-text="country.name"></h2>
                         </div>
                     </div>
-                    <div class="bg-black/40 rounded-xl px-3 py-1 text-center border border-slate-800">
-                        <div class="text-[8px] uppercase font-bold text-slate-500">Avg</div>
-                        <div class="text-2xl font-black text-yellow-400 tabular-nums" x-text="calculateTotal(idx)"></div>
+                    <div class="bg-black/60 rounded-2xl px-4 py-2 text-center border border-slate-800">
+                        <div class="text-[9px] uppercase font-black text-slate-500">AVG</div>
+                        <div class="text-3xl font-black text-yellow-400 tabular-nums" x-text="calculateTotal(idx)"></div>
                     </div>
                 </div>
 
-                <!-- Rating Rows -->
-                <div class="space-y-5">
+                <div class="space-y-6">
                     <template x-for="crit in criteria">
                         <div class="space-y-2">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1" x-text="crit"></span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] pl-1" x-text="crit"></span>
                             
                             <div class="rating-group">
-                                <!-- Loop 12 to 1 (reversed for CSS RTL logic) -->
                                 <template x-for="n in [12,11,10,9,8,7,6,5,4,3,2,1]">
                                     <div class="contents">
                                         <input type="radio" 
@@ -110,8 +107,8 @@
             </div>
         </template>
 
-        <button @click="resetData()" class="w-full py-10 text-slate-600 text-[10px] font-bold uppercase tracking-[0.4em] hover:text-red-500 transition">
-            Purge Local Data
+        <button @click="resetData()" class="w-full py-12 text-slate-700 text-[10px] font-bold uppercase tracking-[0.5em] hover:text-red-500 transition">
+            Delete everything and restart
         </button>
     </main>
 
@@ -119,8 +116,7 @@
         function votingApp() {
             const criteria = ['Song', 'Vocals', 'Staging', 'Vibe'];
             
-            // YOUR HARD-CODED LIST
-            // Edit these names/flags as you go!
+            // Hard-coded list. Change these here manually as countries qualify tonight!
             const initialCountries = [
                 { name: 'Austria', flag: '🇦🇹' },
                 { name: 'France', flag: '🇫🇷' },
@@ -137,7 +133,6 @@
                 { name: 'TBD 8', flag: '✨' },
                 { name: 'TBD 9', flag: '✨' },
                 { name: 'TBD 10', flag: '✨' }
-                // Feel free to add more slots up to 25/26
             ];
 
             return {
@@ -146,13 +141,13 @@
                 scores: [],
                 
                 init() {
-                    const saved = localStorage.getItem('esc2026_stars_final');
+                    const saved = localStorage.getItem('esc2026_final_v3');
                     this.scores = saved ? JSON.parse(saved) : this.countries.map(() => 
                         Object.fromEntries(criteria.map(c => [c, 0]))
                     );
 
                     this.$watch('scores', (val) => {
-                        localStorage.setItem('esc2026_stars_final', JSON.stringify(val));
+                        localStorage.setItem('esc2026_final_v3', JSON.stringify(val));
                     }, { deep: true });
                 },
 
@@ -163,8 +158,8 @@
                 },
 
                 resetData() {
-                    if(confirm("This will clear all your votes! Are you sure?")) {
-                        localStorage.removeItem('esc2026_stars_final');
+                    if(confirm("This will wipe all your friends' scores. Continue?")) {
+                        localStorage.removeItem('esc2026_final_v3');
                         location.reload();
                     }
                 }
