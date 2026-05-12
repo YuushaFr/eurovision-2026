@@ -95,6 +95,16 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
+    <style>
+        /* This overrides the emoji and uses a real flag icon instead */
+        .fi {
+            width: 1.5em;
+            line-height: 1em;
+            display: inline-block;
+            border-radius: 2px;
+        }
+    </style>
 </head>
 <body class="text-slate-200 min-h-screen p-4 font-sans" x-data="votingApp()" x-init="init()" x-cloak>
 
@@ -105,14 +115,12 @@
     </header>
 
     <main class="w-full px-8 flex flex-col lg:flex-row gap-10 items-start">
-        
-        <!-- LEFT COLUMN: Artist Cards (Scrollable) -->
         <div class="flex-[7] space-y-8 pr-6">
             <template x-for="(country, idx) in countries" :key="idx">
                 <div class="bg-slate-900/60 border border-indigo-500/30 rounded-[2.5rem] p-7 backdrop-blur-2xl shadow-2xl shadow-indigo-500/10 text-center">
                     <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
                         <div class="flex items-center gap-3">
-                            <span class="text-4xl" x-text="country.flag"></span>
+                            <span class="text-4xl fi" :class="'fi-' + country.code"></span>
                             <h2 class="text-2xl font-black tracking-tighter text-white uppercase italic" x-text="country.name"></h2>
                         </div>
 
@@ -181,19 +189,22 @@
             const criteria = ['Songwriting', 'Vocals', 'Visuals', 'Vibe'];
             
             const bingoItems = [
-                'Queer meter off chart', 'Folk outfit', 'Full black outfit', 'Fake rain', 'Rap Part',
-                'Strass/sequins', 'Guitar solo', 'Suggestive dance', 'Epilepsy strobes', 'Front row pyros',
+                'Queer energy off charts', 'Folk outfit', 'Full black outfit', 'Fake rain', 'Rap Part',
+                'Strass/sequin', 'Guitar solo', 'Sexual dance', 'Strobes and Epilepsy', 'Pyro Oven',
                 'Acapella part', 'Costume change', 'Sunglasses', 'Flashbang Bloom', 'Feather outfit',
-                'English/Native mix', 'Key change', 'Song déjà vu', 'Voice crack', 'Off key singing',
-                'Stage invader', 'Sexual innuendo', 'Terrible outfit', 'Spokesperson lag', 'Cringe moment'
+                'English/Native mix', 'Drama Key change', 'Déjà vu feel', 'Voice crack', 'Off key singing',
+                'Stage invader', 'Sexual innuendo', 'Terrible outfit', 'Voter takes time', 'Cringe moment'
             ];
 
             const initialCountries = [
-                { name: 'France', flag: '🇫🇷' }, { name: 'United Kingdom', flag: '🇬🇧' },
-                { name: 'Italy', flag: '🇮🇹' }, { name: 'Germany', flag: '🇩🇪' },
-                { name: 'Spain', flag: '🇪🇸' }, { name: 'Austria', flag: '🇦🇹' },
-                { name: 'Qualifying 1', flag: '✨' }, { name: 'Qualifying 2', flag: '✨' },
-                { name: 'Qualifying 3', flag: '✨' }, { name: 'Qualifying 4', flag: '✨' }
+                { name: 'France', code: 'fr' }, 
+                { name: 'United Kingdom', code: 'gb' },
+                { name: 'Italy', code: 'it' },
+                { name: 'Germany', code: 'de' },
+                { name: 'Spain', code: 'es' },
+                { name: 'Austria', code: 'at' },
+                { name: 'Qualifying 1', code: 'eu' }, 
+                // to be added
             ];
 
             return {
