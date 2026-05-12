@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eurovision 2026 - 12pt Scoreboard</title>
+    <title>Eurovision 2026 - Ultra Star</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         
-        /* The Rating Container */
         .rating-group { 
             display: flex; 
             flex-direction: row-reverse; 
             justify-content: space-between;
             width: 100%;
+            padding: 5px 0;
         }
 
         .rating-group input { display: none; }
@@ -25,66 +25,72 @@
             align-items: center;
             flex: 1;
             cursor: pointer;
+            min-width: 0; /* Prevents flex items from overflowing */
         }
 
-        /* BIGGER STARS */
+        /* DRASTICALLY BIGGER STARS */
         .star-item .star { 
-            font-size: 1.6rem; 
-            color: #334155; 
+            font-size: 2.2rem; 
+            color: #1e293b; /* Dark slate for empty stars */
             line-height: 1; 
-            transition: transform 0.1s;
+            transition: all 0.15s ease;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
         
-        .star-item:active .star { transform: scale(1.4); }
+        .star-item:active .star { transform: scale(1.5); }
 
         .star-item .num { 
-            font-size: 0.6rem; 
+            font-size: 0.7rem; 
             font-weight: 900; 
             color: #475569; 
-            margin-top: 2px;
+            margin-top: -2px; /* Pull numbers closer to big stars */
         }
 
-        /* Hover & Checked Logic */
+        /* Checked & Hover Logic */
         .rating-group input:checked ~ .star-item .star,
         .rating-group .star-item:hover .star,
         .rating-group .star-item:hover ~ .star-item .star { 
-            color: #facc15; 
+            color: #facc15;
+            text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
         }
 
-        .rating-group input:checked ~ .star-item .num { color: #facc15; }
+        .rating-group input:checked ~ .star-item .num { 
+            color: #facc15; 
+            font-weight: 900;
+        }
     </style>
 </head>
-<body class="bg-black text-slate-100 min-h-screen p-3 pb-24 font-sans">
+<body class="bg-black text-slate-100 min-h-screen p-2 pb-24 font-sans">
 
-    <header class="text-center py-6">
+    <header class="text-center py-8">
         <h1 class="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-500 to-orange-400 uppercase">
             Vienna 2026
         </h1>
-        <p class="text-slate-500 text-[10px] tracking-[0.4em] font-bold uppercase mt-1">Live Scorecard</p>
+        <p class="text-slate-600 text-[10px] tracking-[0.5em] font-bold uppercase mt-1">Live Jury Scorecard</p>
     </header>
 
-    <main x-data="votingApp()" x-init="init()" x-cloak class="max-w-xl mx-auto space-y-5">
+    <main x-data="votingApp()" x-init="init()" x-cloak class="max-w-xl mx-auto space-y-6">
         <template x-for="(country, idx) in countries" :key="idx">
-            <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-5 shadow-2xl backdrop-blur-sm">
+            <div class="bg-slate-900/40 border border-slate-800 rounded-[2rem] p-6 shadow-2xl">
                 
-                <div class="flex justify-between items-center mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="text-3xl" x-text="country.flag"></div>
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl" x-text="country.flag"></div>
                         <div>
-                            <span class="text-[9px] font-bold text-fuchsia-500 tracking-widest block uppercase" x-text="'Position ' + (idx + 1)"></span>
-                            <h2 class="text-xl font-black tracking-tight" x-text="country.name"></h2>
+                            <span class="text-[10px] font-bold text-fuchsia-500 tracking-widest block uppercase" x-text="'Entry ' + (idx + 1)"></span>
+                            <h2 class="text-2xl font-black tracking-tight leading-tight" x-text="country.name"></h2>
                         </div>
                     </div>
-                    <div class="bg-black/60 rounded-2xl px-4 py-2 text-center border border-slate-800">
-                        <div class="text-[9px] uppercase font-black text-slate-500">AVG</div>
+                    <div class="bg-black/80 rounded-2xl px-5 py-3 text-center border border-slate-800">
+                        <div class="text-[10px] uppercase font-black text-slate-500 mb-1">AVG</div>
                         <div class="text-3xl font-black text-yellow-400 tabular-nums" x-text="calculateTotal(idx)"></div>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-8">
                     <template x-for="crit in criteria">
-                        <div class="space-y-2">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] pl-1" x-text="crit"></span>
+                        <div class="space-y-3">
+                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.25em] block text-center sm:text-left" x-text="crit"></span>
                             
                             <div class="rating-group">
                                 <template x-for="n in [12,11,10,9,8,7,6,5,4,3,2,1]">
@@ -107,8 +113,8 @@
             </div>
         </template>
 
-        <button @click="resetData()" class="w-full py-12 text-slate-700 text-[10px] font-bold uppercase tracking-[0.5em] hover:text-red-500 transition">
-            Delete everything and restart
+        <button @click="resetData()" class="w-full py-16 text-slate-800 text-[10px] font-bold uppercase tracking-[0.6em] hover:text-red-500 transition">
+            Reset All Scoreboard Data
         </button>
     </main>
 
@@ -116,7 +122,7 @@
         function votingApp() {
             const criteria = ['Song', 'Vocals', 'Staging', 'Vibe'];
             
-            // Hard-coded list. Change these here manually as countries qualify tonight!
+            // Edit this array to update the list tonight!
             const initialCountries = [
                 { name: 'Austria', flag: '🇦🇹' },
                 { name: 'France', flag: '🇫🇷' },
@@ -141,13 +147,13 @@
                 scores: [],
                 
                 init() {
-                    const saved = localStorage.getItem('esc2026_final_v3');
+                    const saved = localStorage.getItem('esc2026_ultra_v1');
                     this.scores = saved ? JSON.parse(saved) : this.countries.map(() => 
                         Object.fromEntries(criteria.map(c => [c, 0]))
                     );
 
                     this.$watch('scores', (val) => {
-                        localStorage.setItem('esc2026_final_v3', JSON.stringify(val));
+                        localStorage.setItem('esc2026_ultra_v1', JSON.stringify(val));
                     }, { deep: true });
                 },
 
@@ -158,8 +164,8 @@
                 },
 
                 resetData() {
-                    if(confirm("This will wipe all your friends' scores. Continue?")) {
-                        localStorage.removeItem('esc2026_final_v3');
+                    if(confirm("Wipe all votes? This is irreversible.")) {
+                        localStorage.removeItem('esc2026_ultra_v1');
                         location.reload();
                     }
                 }
