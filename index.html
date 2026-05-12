@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eurovision 2026 - Digital Scorecard</title>
+    <title>Eurovision 2026 - Digital Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -18,40 +18,40 @@
         .bingo-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
+            gap: 4px;
         }
         .bingo-item {
             aspect-ratio: 1;
-            font-size: 0.5rem;
+            font-size: 0.45rem;
             font-weight: 800;
             text-transform: uppercase;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 4px;
-            border-radius: 8px;
+            padding: 2px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.8);
+            line-height: 1.1;
         }
         .bingo-selected {
             background: linear-gradient(135deg, #ec4899 0%, #be185d 100%) !important;
             color: white !important;
             transform: scale(0.95);
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
             border-color: #f472b6;
         }
 
-        /* VOTING ALIGNMENT */
+        /* RATING ALIGNMENT */
         .rating-row {
             display: flex;
-            flex-direction: row-reverse; /* Keeps 12 on the right, 1 on the left */
-            gap: 4px;
+            flex-direction: row-reverse;
+            gap: 2px;
             overflow-x: auto;
             justify-content: flex-start;
-            padding-bottom: 8px;
         }
         .rating-row::-webkit-scrollbar { display: none; }
 
@@ -59,137 +59,132 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex: 0 0 40px;
+            flex: 0 0 32px;
         }
         .star-item .star { 
-            font-size: 2.4rem;
+            font-size: 1.8rem;
             color: rgba(255,255,255,0.05);
-            transition: color 0.2s;
-            cursor: pointer;
+            transition: color 0.1s;
         }
         
-        /* Star highlighting logic */
         .rating-row input:checked ~ .star-item .star,
         .rating-row .star-item:hover .star,
         .rating-row .star-item:hover ~ .star-item .star { 
             color: #fbbf24; 
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
         }
 
         input[type="radio"] { display: none; }
+
+        /* Sticky sidebar logic */
+        @media (min-width: 1024px) {
+            .sticky-sidebar {
+                position: sticky;
+                top: 2rem;
+                height: calc(100vh - 4rem);
+            }
+        }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen p-4 pb-32">
+<body class="text-slate-200 min-h-screen p-4 font-sans" x-data="votingApp()" x-init="init()" x-cloak>
 
-    <header class="text-center mb-10">
-        <h1 class="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 via-pink-500 to-indigo-400 uppercase">
+    <header class="text-center mb-8">
+        <h1 class="text-4xl lg:text-6xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 via-pink-500 to-indigo-400 uppercase">
             Vienna 2026
         </h1>
-        <div class="mt-2 flex justify-center items-center gap-2">
-            <span class="h-px w-8 bg-indigo-500"></span>
-            <p class="text-indigo-400 text-[10px] tracking-[0.4em] font-bold uppercase">Jury Interface</p>
-            <span class="h-px w-8 bg-indigo-500"></span>
-        </div>
     </header>
 
-    <main x-data="votingApp()" x-init="init()" x-cloak class="max-w-5xl mx-auto space-y-8">
-        <template x-for="(country, idx) in countries" :key="idx">
-            <div class="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-6 backdrop-blur-xl shadow-2xl">
-                
-                <!-- Header: Name & Calculated Score -->
-                <div class="flex justify-between items-end mb-8">
-                    <div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-4xl filter drop-shadow-md" x-text="country.flag"></span>
-                            <h2 class="text-2xl font-black tracking-tight" x-text="country.name"></h2>
+    <main class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+        
+        <!-- LEFT COLUMN: Artist Cards (Scrollable) -->
+        <div class="lg:w-2/3 space-y-6">
+            <template x-for="(country, idx) in countries" :key="idx">
+                <div class="bg-slate-900/40 border border-white/10 rounded-[2rem] p-5 backdrop-blur-xl shadow-xl">
+                    
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl" x-text="country.flag"></span>
+                            <h2 class="text-xl font-black tracking-tight" x-text="country.name"></h2>
+                        </div>
+                        <div class="bg-indigo-600/20 border border-indigo-500/30 rounded-xl px-4 py-1 text-right">
+                            <div class="text-[8px] uppercase font-black text-indigo-400">Jury Avg</div>
+                            <div class="text-xl font-black text-white tabular-nums" x-text="calculateTotal(idx)"></div>
                         </div>
                     </div>
-                    <div class="bg-white/5 border border-white/10 rounded-2xl px-6 py-2 text-right">
-                        <div class="text-[9px] uppercase font-black text-indigo-400 tracking-widest">Average</div>
-                        <div class="text-3xl font-black text-white tabular-nums" x-text="calculateTotal(idx)"></div>
+
+                    <div class="space-y-4">
+                        <template x-for="crit in criteria">
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-500">
+                                    <span x-text="crit"></span>
+                                    <span class="text-yellow-500" x-text="scores[idx][crit] || 0"></span>
+                                </div>
+                                <div class="rating-row">
+                                    <template x-for="n in [12,11,10,9,8,7,6,5,4,3,2,1]">
+                                        <div class="contents">
+                                            <input type="radio" :id="idx+crit+n" :name="idx+crit" :value="n" x-model="scores[idx][crit]">
+                                            <label :for="idx+crit+n" class="star-item cursor-pointer">
+                                                <span class="star">★</span>
+                                                <span class="text-[8px] font-bold" :class="scores[idx][crit] == n ? 'text-yellow-500' : 'text-slate-700'" x-text="n"></span>
+                                            </label>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
+            </template>
+        </div>
 
-                <div class="flex flex-col lg:flex-row gap-10">
+        <!-- RIGHT COLUMN: Global Bingo (Sticky) -->
+        <div class="lg:w-1/3">
+            <div class="sticky-sidebar">
+                <div class="bg-slate-900/60 border border-pink-500/30 rounded-[2.5rem] p-6 backdrop-blur-2xl shadow-2xl shadow-pink-500/10">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-black text-pink-400 uppercase tracking-[0.2em]">Live Bingo</h3>
+                        <span class="text-[10px] px-2 py-1 rounded-full bg-pink-500/20 text-pink-300 font-bold" x-text="countBingo() + '/25'"></span>
+                    </div>
                     
-                    <!-- LEFT: 40% Width Bingo -->
-                    <div class="lg:w-[40%]">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Performance Bingo</h3>
-                            <span class="text-[9px] px-2 py-0.5 rounded bg-slate-800 text-slate-400" x-text="countBingo(idx) + '/25'"></span>
-                        </div>
-                        <div class="bingo-grid">
-                            <template x-for="(item, bIdx) in bingoItems" :key="bIdx">
-                                <div @click="toggleBingo(idx, bIdx)" 
-                                     :class="scores[idx].bingo[bIdx] ? 'bingo-selected' : 'text-slate-600'"
-                                     class="bingo-item" 
-                                     x-text="item">
-                                </div>
-                            </template>
-                        </div>
+                    <div class="bingo-grid mb-6">
+                        <template x-for="(item, bIdx) in bingoItems" :key="bIdx">
+                            <div @click="toggleBingo(bIdx)" 
+                                 :class="globalBingo[bIdx] ? 'bingo-selected' : 'text-slate-500'"
+                                 class="bingo-item" 
+                                 x-text="item">
+                            </div>
+                        </template>
                     </div>
 
-                    <!-- RIGHT: 60% Width Voting (Aligned Right) -->
-                    <div class="lg:w-[60%] flex flex-col items-end">
-                        <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 self-start lg:self-end">Jury Assessment</h3>
-                        <div class="space-y-6 w-full max-w-md">
-                            <template x-for="crit in criteria">
-                                <div class="space-y-1">
-                                    <div class="flex justify-between text-[10px] font-bold uppercase tracking-tight">
-                                        <span class="text-indigo-300" x-text="crit"></span>
-                                        <span class="text-slate-600">Points: <span class="text-yellow-500" x-text="scores[idx][crit] || 0"></span></span>
-                                    </div>
-                                    <div class="rating-row">
-                                        <template x-for="n in [12,11,10,9,8,7,6,5,4,3,2,1]">
-                                            <div class="contents">
-                                                <input type="radio" :id="idx+crit+n" :name="idx+crit" :value="n" x-model="scores[idx][crit]">
-                                                <label :for="idx+crit+n" class="star-item">
-                                                    <span class="star">★</span>
-                                                    <span class="text-[10px] font-bold" :class="scores[idx][crit] == n ? 'text-yellow-500' : 'text-slate-700'" x-text="n"></span>
-                                                </label>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
+                    <div class="space-y-4 pt-4 border-t border-white/5">
+                        <p class="text-[9px] text-slate-500 uppercase font-bold text-center">Global Session Data</p>
+                        <button @click="resetAll()" class="w-full py-3 rounded-xl border border-red-900/30 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-900/20 transition">
+                            Reset Scorecard
+                        </button>
                     </div>
-
                 </div>
             </div>
-        </template>
-
-        <!-- Footer Actions -->
-        <div class="flex flex-col items-center pt-10 gap-4">
-            <p class="text-slate-600 text-[10px] uppercase font-medium">Data saves automatically to your device</p>
-            <button @click="resetAll()" class="px-8 py-3 rounded-full border border-red-900/30 text-red-900 text-xs font-bold uppercase tracking-widest hover:bg-red-900/10 transition">
-                Reset All Scores
-            </button>
         </div>
     </main>
 
     <script>
         function votingApp() {
-            const criteria = ['Songwriting', 'Vocal Power', 'Stage Visuals', 'The Vibe'];
+            const criteria = ['Songwriting', 'Vocals', 'Visuals', 'Vibe'];
             
-            // Your 25 Bingo Tropes
             const bingoItems = [
-                'Artist off chart on the queer meter', 'Folk outfit', 'Full black outfit', 'Fake rain', 'Rap Part',
-                'Strass/sequin outfit ', 'Guitar solo', 'Sexualy suggestive dance', 'Strobe on epilepsy level', 'Pyrothechnics trying to roast the front row',
-                'Acapela part', 'Costume change', 'Sunglass on scene', 'Bloom to max, CS Source flashbang experience', 'Feather outfit',
-                'Mix English/Native song', 'Dramatic key change', 'Song feels déjà vu', 'Voice crack', 'Off key singing',
-                'Stage invader', 'Sexual innuendo ', 'Terrible outfit', 'Vote representative takes his time ', 'Cringe moment'
+                'Queer meter off chart', 'Folk outfit', 'Full black outfit', 'Fake rain', 'Rap Part',
+                'Strass/sequins', 'Guitar solo', 'Suggestive dance', 'Epilepsy strobes', 'Front row pyros',
+                'Acapella part', 'Costume change', 'Sunglasses', 'Flashbang Bloom', 'Feather outfit',
+                'English/Native mix', 'Key change', 'Song déjà vu', 'Voice crack', 'Off key singing',
+                'Stage invader', 'Sexual innuendo', 'Terrible outfit', 'Spokesperson lag', 'Cringe moment'
             ];
 
             const initialCountries = [
-                { name: 'France', flag: '🇫🇷' },
-                { name: 'United Kingdom', flag: '🇬🇧' },
-                { name: 'Italy', flag: '🇮🇹' },
-                { name: 'Germany', flag: '🇩🇪' },
-                { name: 'Spain', flag: '🇪🇸' },
-                { name: 'Austria (Host)', flag: '🇦🇹' },
-                { name: 'Qualifying 1', flag: '✨' },
-                { name: 'Qualifying 2', flag: '✨' }
+                { name: 'France', flag: '🇫🇷' }, { name: 'United Kingdom', flag: '🇬🇧' },
+                { name: 'Italy', flag: '🇮🇹' }, { name: 'Germany', flag: '🇩🇪' },
+                { name: 'Spain', flag: '🇪🇸' }, { name: 'Austria', flag: '🇦🇹' },
+                { name: 'Qualifying 1', flag: '✨' }, { name: 'Qualifying 2', flag: '✨' },
+                { name: 'Qualifying 3', flag: '✨' }, { name: 'Qualifying 4', flag: '✨' }
             ];
 
             return {
@@ -197,29 +192,28 @@
                 bingoItems,
                 countries: initialCountries,
                 scores: [],
+                globalBingo: [],
 
                 init() {
-                    const saved = localStorage.getItem('esc_2026_master');
-                    if (saved) {
-                        this.scores = JSON.parse(saved);
-                    } else {
-                        this.scores = this.countries.map(() => ({
-                            ...Object.fromEntries(criteria.map(c => [c, 0])),
-                            bingo: Array(25).fill(false)
-                        }));
-                    }
+                    const savedScores = localStorage.getItem('esc_2026_scores');
+                    const savedBingo = localStorage.getItem('esc_2026_bingo');
+                    
+                    if (savedScores) this.scores = JSON.parse(savedScores);
+                    else this.scores = this.countries.map(() => Object.fromEntries(criteria.map(c => [c, 0])));
 
-                    this.$watch('scores', (val) => {
-                        localStorage.setItem('esc_2026_master', JSON.stringify(val));
-                    }, { deep: true });
+                    if (savedBingo) this.globalBingo = JSON.parse(savedBingo);
+                    else this.globalBingo = Array(25).fill(false);
+
+                    this.$watch('scores', (val) => localStorage.setItem('esc_2026_scores', JSON.stringify(val)), { deep: true });
+                    this.$watch('globalBingo', (val) => localStorage.setItem('esc_2026_bingo', JSON.stringify(val)), { deep: true });
                 },
 
-                toggleBingo(countryIdx, itemIdx) {
-                    this.scores[countryIdx].bingo[itemIdx] = !this.scores[countryIdx].bingo[itemIdx];
+                toggleBingo(itemIdx) {
+                    this.globalBingo[itemIdx] = !this.globalBingo[itemIdx];
                 },
 
-                countBingo(idx) {
-                    return this.scores[idx].bingo.filter(Boolean).length;
+                countBingo() {
+                    return this.globalBingo.filter(Boolean).length;
                 },
 
                 calculateTotal(idx) {
@@ -230,8 +224,8 @@
                 },
 
                 resetAll() {
-                    if(confirm("This will erase all your rankings and bingo progress. Proceed?")) {
-                        localStorage.removeItem('esc_2026_master');
+                    if(confirm("Erase all data?")) {
+                        localStorage.clear();
                         location.reload();
                     }
                 }
